@@ -5,6 +5,7 @@ import com.codffee.backend.entity.Usuario;
 import com.codffee.backend.exception.RecursoNoEncontradoException;
 import com.codffee.backend.exception.SolicitudInvalidaException;
 import com.codffee.backend.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,9 +15,11 @@ import java.util.List;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<Usuario> listarTodos() {
@@ -50,6 +53,8 @@ public class UsuarioService {
             usuario.setRol(Rol.CLIENTE);
         }
 
+        usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
+
         return usuarioRepository.save(usuario);
     }
 
@@ -63,9 +68,12 @@ public class UsuarioService {
 
         usuario.setNombre(usuarioActualizado.getNombre());
         usuario.setCorreo(usuarioActualizado.getCorreo());
-        usuario.setContrasena(usuarioActualizado.getContrasena());
         usuario.setRol(usuarioActualizado.getRol());
         usuario.setActivo(usuarioActualizado.getActivo());
+
+        if (usuarioActualizado.getContrasena() != null && !usuarioActualizado.getContrasena().isBlank()) {
+            usuario.setContrasena(passwordEncoder.encode(usuarioActualizado.getContrasena()));
+        }
 
         return usuarioRepository.save(usuario);
     }

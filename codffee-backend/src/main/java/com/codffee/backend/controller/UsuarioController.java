@@ -1,5 +1,6 @@
 package com.codffee.backend.controller;
 
+import com.codffee.backend.dto.UsuarioResponse;
 import com.codffee.backend.entity.Usuario;
 import com.codffee.backend.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -18,33 +19,43 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public List<Usuario> listarTodos() {
-        return usuarioService.listarTodos();
+    public List<UsuarioResponse> listarTodos() {
+        return usuarioService.listarTodos()
+                .stream()
+                .map(UsuarioResponse::fromEntity)
+                .toList();
     }
 
     @GetMapping("/activos")
-    public List<Usuario> listarActivos() {
-        return usuarioService.listarActivos();
+    public List<UsuarioResponse> listarActivos() {
+        return usuarioService.listarActivos()
+                .stream()
+                .map(UsuarioResponse::fromEntity)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public Usuario buscarPorId(@PathVariable Long id) {
-        return usuarioService.buscarPorId(id);
+    public UsuarioResponse buscarPorId(@PathVariable Long id) {
+        Usuario usuario = usuarioService.buscarPorId(id);
+        return UsuarioResponse.fromEntity(usuario);
     }
 
     @GetMapping("/correo/{correo}")
-    public Usuario buscarPorCorreo(@PathVariable String correo) {
-        return usuarioService.buscarPorCorreo(correo);
+    public UsuarioResponse buscarPorCorreo(@PathVariable String correo) {
+        Usuario usuario = usuarioService.buscarPorCorreo(correo);
+        return UsuarioResponse.fromEntity(usuario);
     }
 
     @PostMapping
-    public Usuario crear(@Valid @RequestBody Usuario usuario) {
-        return usuarioService.crear(usuario);
+    public UsuarioResponse crear(@Valid @RequestBody Usuario usuario) {
+        Usuario usuarioCreado = usuarioService.crear(usuario);
+        return UsuarioResponse.fromEntity(usuarioCreado);
     }
 
     @PutMapping("/{id}")
-    public Usuario actualizar(@PathVariable Long id, @Valid @RequestBody Usuario usuario) {
-        return usuarioService.actualizar(id, usuario);
+    public UsuarioResponse actualizar(@PathVariable Long id, @Valid @RequestBody Usuario usuario) {
+        Usuario usuarioActualizado = usuarioService.actualizar(id, usuario);
+        return UsuarioResponse.fromEntity(usuarioActualizado);
     }
 
     @DeleteMapping("/{id}")
