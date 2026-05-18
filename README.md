@@ -1,68 +1,42 @@
-# Codffee - Ejecución con Docker y pruebas con Swagger
+# Codffee - Guía rápida de ejecución y pruebas
 
-Codffee es un backend desarrollado con Spring Boot para un sistema de pedidos de cafetería. Este README explica únicamente cómo ejecutar el proyecto con Docker y cómo probar sus principales funcionalidades desde Swagger UI.
+Este documento explica cómo ejecutar el proyecto **Codffee** usando Docker y cómo probar sus funcionalidades principales desde **Swagger UI**.
 
 ---
 
-## 1. Requisitos previos
+## 1. Requisitos
 
-Para ejecutar el proyecto solo necesitas tener instalado:
+Antes de ejecutar el proyecto, asegúrate de tener instalado:
 
 - Docker
 - Docker Compose
+- Node.js y npm, solo si también se probará el frontend React
 
-Puedes verificar que Docker esté instalado ejecutando:
+Puedes comprobar Docker con:
 
 ```bash
 docker --version
-```
-
-Y también:
-
-```bash
 docker compose version
 ```
 
+Y Node.js con:
+
+```bash
+node -v
+npm -v
+```
+
 ---
 
-## 2. Estructura esperada del proyecto
+## 2. Configurar variables de entorno del backend
 
-En la raíz del proyecto backend deben existir estos archivos:
-
-```text
-codffee-backend/
-├── src/
-├── pom.xml
-├── Dockerfile
-├── docker-compose.yml
-├── .env
-├── .dockerignore
-└── README.md
-```
-
-El archivo más importante para la configuración de Docker es:
-
-```text
-docker-compose.yml
-```
-
-Y el archivo donde se guardan variables como contraseñas y correo es:
+En la raíz del proyecto backend, donde están `Dockerfile` y `docker-compose.yml`, crea un archivo llamado:
 
 ```text
 .env
 ```
 
----
-
-## 3. Crear archivo `.env`
-
-En la raíz del proyecto crea un archivo llamado:
-
-```text
-.env
-```
-
-Dentro del archivo coloca la siguiente configuración:
+Agrega el siguiente contenido:
 
 ```env
 MYSQL_DATABASE=codffee_db
@@ -80,43 +54,28 @@ JWT_SECRET=Q29kZmZlZVNlY3JldEtleTIwMjZQcm95ZWN0b0NhZmV0ZXJpYVNlZ3VyYQ==
 JWT_EXPIRATION_MS=86400000
 ```
 
-Debes cambiar estos valores:
+Cambia `TU_CORREO@gmail.com` y `TU_PASSWORD_DE_APLICACION` por los datos reales del correo que enviará notificaciones.
 
-```text
-TU_CORREO@gmail.com
-TU_PASSWORD_DE_APLICACION
-```
-
-Por el correo real que utilizarás para enviar notificaciones desde el sistema.
-
-Importante: si usas Gmail, no debes usar la contraseña normal de tu cuenta. Debes usar una contraseña de aplicación.
+> Si usas Gmail, necesitas una contraseña de aplicación, no la contraseña normal de tu cuenta.
 
 ---
 
-## 4. Ejecutar el proyecto con Docker
+## 3. Ejecutar el backend con Docker
 
-Abre una terminal en la raíz del proyecto, donde se encuentra el archivo:
-
-```text
-docker-compose.yml
-```
-
-Ejecuta:
+Desde la raíz del backend ejecuta:
 
 ```bash
 docker compose up --build
 ```
 
-La primera vez puede tardar algunos minutos porque Docker debe descargar imágenes, construir el backend y levantar MySQL.
-
-Cuando termine correctamente, deben quedar activos dos contenedores:
+Cuando termine, deben estar activos estos contenedores:
 
 ```text
 codffee-backend
 codffee-mysql
 ```
 
-Puedes comprobarlo con:
+Puedes verificarlo con:
 
 ```bash
 docker ps
@@ -124,23 +83,23 @@ docker ps
 
 ---
 
-## 5. Abrir Swagger UI
+## 4. Abrir Swagger UI
 
-Cuando el backend esté activo, abre en tu navegador:
+Con el backend ejecutándose, abre:
 
 ```text
 http://localhost:8080/swagger-ui/index.html
 ```
 
-Desde Swagger podrás probar todos los endpoints del backend.
+Desde Swagger se pueden probar los endpoints del backend.
 
 ---
 
-## 6. Datos iniciales del sistema
+## 5. Cuentas iniciales
 
-Al iniciar el backend, el sistema crea automáticamente usuarios, categorías y productos iniciales.
+El sistema crea automáticamente usuarios iniciales al arrancar.
 
-### Cuenta de administrador
+### Administrador
 
 ```text
 Correo: admin@codffee.com
@@ -148,7 +107,7 @@ Contraseña: 123456
 Rol: ADMIN
 ```
 
-### Cuenta de personal de cafetería
+### Personal de cafetería
 
 ```text
 Correo: personal@codffee.com
@@ -156,7 +115,7 @@ Contraseña: 123456
 Rol: PERSONAL
 ```
 
-### Cuenta de cliente
+### Cliente
 
 ```text
 Correo: cliente@codffee.com
@@ -166,27 +125,15 @@ Rol: CLIENTE
 
 ---
 
-## 7. Iniciar sesión desde Swagger
+## 6. Iniciar sesión en Swagger
 
-En Swagger busca el controlador:
-
-```text
-auth-controller
-```
-
-Abre el endpoint:
+En Swagger busca:
 
 ```http
 POST /api/auth/login
 ```
 
-Presiona:
-
-```text
-Try it out
-```
-
-Para iniciar sesión como administrador, usa:
+Ejemplo para administrador:
 
 ```json
 {
@@ -195,7 +142,7 @@ Para iniciar sesión como administrador, usa:
 }
 ```
 
-Para iniciar sesión como cliente, usa:
+Ejemplo para cliente:
 
 ```json
 {
@@ -204,7 +151,7 @@ Para iniciar sesión como cliente, usa:
 }
 ```
 
-Si el login es correcto, recibirás una respuesta parecida a esta:
+La respuesta incluirá un token JWT:
 
 ```json
 {
@@ -218,90 +165,53 @@ Si el login es correcto, recibirás una respuesta parecida a esta:
 }
 ```
 
-Copia el valor del campo:
-
-```json
-"token"
-```
-
-No copies las comillas.
+Copia el valor de `token`.
 
 ---
 
-## 8. Autorizar Swagger con JWT
+## 7. Autorizar Swagger con JWT
 
-En la parte superior derecha de Swagger presiona:
+En Swagger presiona el botón:
 
 ```text
 Authorize
 ```
 
-Pega el token con el siguiente formato:
+Pega el token con este formato:
 
 ```text
 Bearer TOKEN_JWT
 ```
 
-Después presiona:
-
-```text
-Authorize
-```
-
-Y luego:
-
-```text
-Close
-```
-
-A partir de ese momento Swagger enviará el token en las peticiones protegidas.
+Luego presiona **Authorize** y después **Close**.
 
 ---
 
-## 9. Probar productos disponibles
+## 8. Pruebas principales en Swagger
 
-Para consultar los productos disponibles, busca el endpoint:
+### Consultar productos disponibles
+
+Endpoint:
 
 ```http
 GET /api/productos/disponibles
 ```
 
-Presiona:
-
-```text
-Try it out
-```
-
-Luego:
-
-```text
-Execute
-```
-
-Este endpoint puede ser consultado por usuarios cliente, personal o administrador.
+Sirve para ver los productos que puede pedir un cliente.
 
 ---
 
-## 10. Crear un pedido
+### Crear un pedido
 
-Primero inicia sesión como cliente:
+Inicia sesión como cliente y autoriza Swagger con su token.
 
-```json
-{
-  "correo": "cliente@codffee.com",
-  "contrasena": "123456"
-}
-```
-
-Autoriza Swagger con el token del cliente.
-
-Después busca el endpoint:
+Endpoint:
 
 ```http
 POST /api/pedidos
 ```
 
-Usa un JSON como este:
+Ejemplo:
 
 ```json
 {
@@ -321,39 +231,19 @@ Usa un JSON como este:
 }
 ```
 
-Notas importantes:
-
-- `usuarioId` debe corresponder al ID del cliente.
-- `productoId` debe corresponder a productos existentes.
-- La cantidad no debe superar el stock disponible.
-
-Si el pedido se crea correctamente, el sistema:
-
-- Guarda el pedido.
-- Guarda los detalles del pedido.
-- Calcula el total.
-- Descuenta stock.
-- Envía un correo de confirmación al usuario.
+Al crear el pedido, el sistema guarda la orden, calcula el total, descuenta stock y envía correo de confirmación.
 
 ---
 
-## 11. Consultar pedidos
+### Consultar pedidos
 
-Para consultar pedidos, usa:
+Endpoint:
 
 ```http
 GET /api/pedidos
 ```
 
-Este endpoint está protegido y requiere token.
-
-También puedes consultar un pedido específico:
-
-```http
-GET /api/pedidos/{id}
-```
-
-O consultar sus detalles:
+También puedes consultar detalles de un pedido:
 
 ```http
 GET /api/pedidos/{pedidoId}/detalles
@@ -361,22 +251,11 @@ GET /api/pedidos/{pedidoId}/detalles
 
 ---
 
-## 12. Cambiar estado de un pedido
+### Cambiar estado de un pedido
 
-Para cambiar el estado de un pedido, inicia sesión como administrador o personal.
+Inicia sesión como `ADMIN` o `PERSONAL`.
 
-Puedes usar la cuenta de personal:
-
-```json
-{
-  "correo": "personal@codffee.com",
-  "contrasena": "123456"
-}
-```
-
-Autoriza Swagger con el token correspondiente.
-
-Luego usa el endpoint:
+Endpoint:
 
 ```http
 PUT /api/pedidos/{pedidoId}/estado/{estado}
@@ -399,86 +278,39 @@ pedidoId: 1
 estado: LISTO
 ```
 
-Cuando el estado cambia, el sistema envía un correo de actualización al usuario.
+Al cambiar el estado, el sistema envía un correo al usuario.
 
 ---
 
-## 13. Cancelar un pedido
+### Cancelar un pedido
 
-Para cancelar un pedido usa:
+Endpoint:
 
 ```http
 PUT /api/pedidos/{pedidoId}/cancelar
 ```
 
-El sistema realizará lo siguiente:
-
-- Cambiará el estado del pedido a `CANCELADO`.
-- Regresará el stock de los productos.
-- Enviará correo de cancelación al usuario.
-
-No se puede cancelar un pedido que ya fue marcado como `ENTREGADO`.
+El sistema cambia el estado a `CANCELADO`, regresa el stock de los productos y envía correo de cancelación.
 
 ---
 
-## 14. Probar envío de correo
+### Generar reporte PDF general
 
-El sistema envía correos automáticamente en estos casos:
+Inicia sesión como `ADMIN`.
 
-- Cuando se crea un pedido.
-- Cuando cambia el estado de un pedido.
-- Cuando se cancela un pedido.
-
-También existe un endpoint de prueba:
-
-```http
-POST /api/correos/prueba
-```
-
-Parámetro:
-
-```text
-destinatario
-```
-
-Ejemplo:
-
-```text
-destinatario=tu_correo@gmail.com
-```
-
-Si la configuración SMTP es correcta, llegará un correo de prueba.
-
----
-
-## 15. Generar reporte PDF general
-
-Para generar un reporte general de pedidos, inicia sesión como administrador:
-
-```json
-{
-  "correo": "admin@codffee.com",
-  "contrasena": "123456"
-}
-```
-
-Autoriza Swagger con el token.
-
-Luego usa:
+Endpoint:
 
 ```http
 GET /api/reportes/pedidos/pdf
 ```
 
-Swagger descargará un archivo PDF con el reporte de pedidos.
+El sistema descargará un archivo PDF con el reporte general de pedidos.
 
 ---
 
-## 16. Generar reporte PDF filtrado
+### Generar reporte PDF filtrado
 
-También puedes generar un reporte filtrado por fechas y estado.
-
-Usa el endpoint:
+Endpoint:
 
 ```http
 GET /api/reportes/pedidos/pdf/filtrado
@@ -500,192 +332,74 @@ fechaFin=2026-12-31
 estado=ENTREGADO
 ```
 
-El parámetro `estado` es opcional. Si lo dejas vacío, el reporte incluirá todos los estados dentro del rango de fechas.
-
-Estados válidos:
-
-```text
-PENDIENTE
-EN_PREPARACION
-LISTO
-ENTREGADO
-CANCELADO
-```
+El parámetro `estado` es opcional.
 
 ---
 
-## 17. Roles y permisos principales
+## 9. Ejecutar el frontend React
 
-### ADMIN
-
-Puede acceder a:
-
-- Usuarios
-- Categorías
-- Productos
-- Pedidos
-- Reportes
-
-### PERSONAL
-
-Puede acceder principalmente a:
-
-- Categorías
-- Productos
-- Pedidos
-- Cambio de estado de pedidos
-
-### CLIENTE
-
-Puede acceder principalmente a:
-
-- Productos disponibles
-- Categorías activas
-- Creación de pedidos
-- Consulta de pedidos permitidos
-
----
-
-## 18. Detener el proyecto
-
-Para detener los contenedores ejecuta:
+Entra a la carpeta del frontend:
 
 ```bash
-docker compose down
+cd codffee-frontend
 ```
 
----
-
-## 19. Reiniciar desde cero
-
-Si quieres borrar la base de datos del contenedor y volver a crear todo desde cero, ejecuta:
+Instala dependencias:
 
 ```bash
-docker compose down -v
-docker compose up --build
+npm install
 ```
 
-Esto eliminará el volumen de MySQL y el sistema volverá a crear usuarios, categorías y productos iniciales.
-
----
-
-## 20. Ver logs
-
-Para ver los logs del backend:
-
-```bash
-docker logs codffee-backend
-```
-
-Para verlos en tiempo real:
-
-```bash
-docker logs -f codffee-backend
-```
-
-Para ver los logs de MySQL:
-
-```bash
-docker logs codffee-mysql
-```
-
----
-
-## 21. Problemas comunes
-
-### Swagger no abre
-
-Verifica que los contenedores estén activos:
-
-```bash
-docker ps
-```
-
-También revisa los logs:
-
-```bash
-docker logs codffee-backend
-```
-
-### Error de conexión a MySQL
-
-Asegúrate de que el servicio de MySQL esté activo:
-
-```bash
-docker ps
-```
-
-También puedes reiniciar todo:
-
-```bash
-docker compose down
-docker compose up --build
-```
-
-### No llegan correos
-
-Revisa que en `.env` estén bien configurados:
+Crea un archivo `.env` en la raíz del frontend con:
 
 ```env
-SPRING_MAIL_USERNAME=TU_CORREO@gmail.com
-SPRING_MAIL_PASSWORD=TU_PASSWORD_DE_APLICACION
+VITE_API_URL=http://localhost:8080/api
 ```
 
-Si usas Gmail, recuerda que debes utilizar una contraseña de aplicación.
-
-### Error 403 Forbidden
-
-Significa que el usuario inició sesión correctamente, pero su rol no tiene permiso para acceder al endpoint solicitado.
-
-Por ejemplo, un usuario `CLIENTE` no puede acceder a:
-
-```http
-GET /api/usuarios
-```
-
-Ese endpoint requiere rol `ADMIN`.
-
----
-
-## 22. Flujo recomendado para demostrar el proyecto
-
-Para una presentación o revisión, se recomienda probar este flujo:
-
-1. Levantar el proyecto con Docker.
-2. Abrir Swagger UI.
-3. Iniciar sesión como cliente.
-4. Consultar productos disponibles.
-5. Crear un pedido.
-6. Verificar que se envía el correo de confirmación.
-7. Iniciar sesión como personal.
-8. Cambiar el estado del pedido a `LISTO`.
-9. Verificar que se envía correo de actualización.
-10. Iniciar sesión como administrador.
-11. Generar reporte PDF general.
-12. Generar reporte PDF filtrado.
-
----
-
-## 23. Comandos principales
-
-Levantar el proyecto:
+Ejecuta el frontend:
 
 ```bash
-docker compose up --build
+npm run dev
 ```
 
-Detener el proyecto:
+Abre la URL que indique Vite, normalmente:
+
+```text
+http://localhost:5173
+```
+
+Puedes iniciar sesión con las mismas cuentas de prueba.
+
+---
+
+## 10. Detener el proyecto
+
+Para detener los contenedores:
 
 ```bash
 docker compose down
 ```
 
-Borrar datos y reconstruir desde cero:
+Para detenerlos y borrar la base de datos del contenedor:
+
+```bash
+docker compose down -v
+```
+
+---
+
+## 11. Reiniciar desde cero
+
+Si quieres borrar todo y volver a crear la base con datos iniciales:
 
 ```bash
 docker compose down -v
 docker compose up --build
 ```
+
+---
+
+## 12. Comandos útiles
 
 Ver contenedores activos:
 
@@ -699,16 +413,61 @@ Ver logs del backend:
 docker logs -f codffee-backend
 ```
 
+Ver logs de MySQL:
+
+```bash
+docker logs -f codffee-mysql
+```
+
 ---
 
-## 24. Notas finales
+## 13. Problemas comunes
 
-- El proyecto está preparado para ejecutarse con Docker.
-- MySQL se ejecuta en un contenedor.
-- El backend se ejecuta en otro contenedor.
-- Los datos iniciales se crean automáticamente.
-- Swagger UI permite probar toda la API.
-- Las contraseñas se almacenan cifradas con BCrypt.
-- La autenticación se realiza mediante JWT.
-- Los reportes se generan en PDF.
-- Las notificaciones se envían por correo.
+### Error 403 Forbidden
+
+El login fue correcto, pero el usuario no tiene permiso para ese endpoint.
+
+Ejemplo: un usuario `CLIENTE` no puede consultar:
+
+```http
+GET /api/usuarios
+```
+
+Ese endpoint requiere rol `ADMIN`.
+
+### No llegan correos
+
+Revisa en `.env`:
+
+```env
+SPRING_MAIL_USERNAME=TU_CORREO@gmail.com
+SPRING_MAIL_PASSWORD=TU_PASSWORD_DE_APLICACION
+```
+
+Si usas Gmail, asegúrate de usar contraseña de aplicación.
+
+### Swagger no abre
+
+Verifica que el backend esté activo:
+
+```bash
+docker ps
+docker logs -f codffee-backend
+```
+
+---
+
+## 14. Flujo recomendado para demostrar el proyecto
+
+1. Levantar backend con Docker.
+2. Abrir Swagger UI.
+3. Iniciar sesión como cliente.
+4. Consultar productos disponibles.
+5. Crear un pedido.
+6. Verificar correo de confirmación.
+7. Iniciar sesión como personal.
+8. Cambiar estado del pedido a `LISTO`.
+9. Verificar correo de actualización.
+10. Iniciar sesión como administrador.
+11. Generar reporte PDF general o filtrado.
+12. Probar login desde el frontend React.
