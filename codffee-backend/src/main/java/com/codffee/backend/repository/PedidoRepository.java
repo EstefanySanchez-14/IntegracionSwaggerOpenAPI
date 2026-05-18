@@ -4,6 +4,7 @@ import com.codffee.backend.entity.EstadoPedido;
 import com.codffee.backend.entity.Pedido;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
@@ -11,4 +12,12 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     List<Pedido> findByUsuarioId(Long usuarioId);
 
     List<Pedido> findByEstado(EstadoPedido estado);
+
+    List<Pedido> findByFechaHoraBetween(LocalDateTime fechaInicio, LocalDateTime fechaFin);
+
+    List<Pedido> findByFechaHoraBetweenAndEstado(
+            LocalDateTime fechaInicio,
+            LocalDateTime fechaFin,
+            EstadoPedido estado
+    );
 }
