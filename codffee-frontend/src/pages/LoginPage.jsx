@@ -5,19 +5,16 @@ import { login, guardarSesion } from '../services/authService'
 
 function LoginPage() {
   const navigate = useNavigate()
-
-  const [form, setForm] = useState({
-    correo: '',
-    contrasena: '',
-  })
-
+  const [form, setForm] = useState({ correo: '', contrasena: '' })
   const [cargando, setCargando] = useState(false)
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    })
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
+  const redirectByRole = (rol) => {
+    const routes = { CLIENTE: '/menu', PERSONAL: '/staff/pedidos', ADMIN: '/admin' }
+    navigate(routes[rol] || '/menu')
   }
 
   const handleSubmit = async (e) => {
@@ -31,12 +28,12 @@ function LoginPage() {
       Swal.fire({
         icon: 'success',
         title: 'Bienvenido',
-        text: data.mensaje,
+        text: data.mensaje || 'Inicio de sesión exitoso',
         timer: 1500,
         showConfirmButton: false,
       })
 
-      navigate('/menu')
+      redirectByRole(data.rol)
     } catch (error) {
       Swal.fire({
         icon: 'error',
@@ -49,54 +46,62 @@ function LoginPage() {
   }
 
   return (
-    <div className="login-page d-flex align-items-center justify-content-center">
-      <div className="card shadow login-card">
-        <div className="card-body p-4">
-          <h1 className="text-center mb-2">Codffee</h1>
-          <p className="text-center text-muted mb-4">
-            Sistema de pedidos para cafetería
-          </p>
-
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label className="form-label">Correo</label>
-              <input
-                type="email"
-                name="correo"
-                className="form-control"
-                value={form.correo}
-                onChange={handleChange}
-                placeholder="admin@codffee.com"
-                required
-              />
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label">Contraseña</label>
-              <input
-                type="password"
-                name="contrasena"
-                className="form-control"
-                value={form.contrasena}
-                onChange={handleChange}
-                placeholder="123456"
-                required
-              />
-            </div>
-
-            <button className="btn btn-primary w-100" disabled={cargando}>
-              {cargando ? 'Ingresando...' : 'Iniciar sesión'}
-            </button>
-          </form>
-
-          <div className="mt-4 small text-muted">
-            <p className="mb-1">Cuentas de prueba:</p>
-            <p className="mb-1">Admin: admin@codffee.com / 123456</p>
-            <p className="mb-1">Cliente: cliente@codffee.com / 123456</p>
-            <p className="mb-0">Personal: personal@codffee.com / 123456</p>
+    <div className="login-page">
+      <div className="login-bg"></div>
+      <main className="login-container">
+        <div className="login-card">
+          <div className="login-card-header">
+            <h1 className="login-title">Codffee</h1>
+            <p className="login-subtitle">Sistema de pedidos para cafetería</p>
+          </div>
+          <div className="login-card-body">
+            <form onSubmit={handleSubmit}>
+              <div className="login-field">
+                <label className="login-label" htmlFor="correo">Correo Electrónico</label>
+                <div className="login-input-wrapper">
+                  <span className="material-symbols-outlined login-input-icon">mail</span>
+                  <input
+                    id="correo"
+                    type="email"
+                    name="correo"
+                    className="login-input"
+                    value={form.correo}
+                    onChange={handleChange}
+                    placeholder="estudiante@universidad.edu"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="login-field">
+                <label className="login-label" htmlFor="contrasena">Contraseña</label>
+                <div className="login-input-wrapper">
+                  <span className="material-symbols-outlined login-input-icon">lock</span>
+                  <input
+                    id="contrasena"
+                    type="password"
+                    name="contrasena"
+                    className="login-input"
+                    value={form.contrasena}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
+              </div>
+              <button className="login-btn" type="submit" disabled={cargando}>
+                {cargando ? 'Ingresando...' : 'Iniciar sesión'}
+              </button>
+            </form>
+          </div>
+          <div className="login-card-footer">
+            <p className="login-test-title">Cuentas de prueba:</p>
+            <p className="login-test-item">Admin: admin@codffee.com / 123456</p>
+            <p className="login-test-item">Cliente: cliente@codffee.com / 123456</p>
+            <p className="login-test-item">Personal: personal@codffee.com / 123456</p>
           </div>
         </div>
-      </div>
+        <p className="login-footer-note">Acceso exclusivo para personal y estudiantes autorizados.</p>
+      </main>
     </div>
   )
 }
