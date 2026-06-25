@@ -6,7 +6,6 @@
 \usepackage{array}
 \usepackage{booktabs}
 \usepackage{caption}
-\usepackage{color}
 \usepackage[table,dvipsnames]{xcolor}
 \usepackage{float}
 \usepackage{graphicx}
@@ -17,7 +16,9 @@
 
 \definecolor{colorIPN}{rgb}{0.5,0.0,0.13}
 \definecolor{colorESCOM}{rgb}{0.0,0.5,1.0}
-\definecolor{placeholderBg}{rgb}{0.94,0.96,0.98}
+\definecolor{codeBg}{rgb}{0.96,0.97,0.99}
+
+\graphicspath{{capturas/}}
 
 \hypersetup{
     colorlinks=true,
@@ -41,45 +42,38 @@
     columns=fixed,
     showstringspaces=false,
     breaklines=true,
+    backgroundcolor=\color{codeBg},
     commentstyle=\color{Violet},
     keywordstyle=\color{colorIPN}\bfseries,
     stringstyle=\color{colorESCOM}
 }
 
-\newcommand{\capturapendiente}[2]{
+\newcommand{\cod}[1]{\texttt{\scriptsize #1}}
+\newcommand{\captura}[3]{
 \begin{figure}[H]
     \centering
-    \IfFileExists{capturas/#1}{
-        \includegraphics[width=0.92\textwidth,height=0.58\textheight,keepaspectratio]{#1}
-    }{
-        \fcolorbox{colorIPN}{placeholderBg}{
-            \begin{minipage}[c][6cm][c]{0.88\textwidth}
-                \centering
-                \Large\textbf{Espacio para evidencia}\\[0.4cm]
-                \normalsize Archivo sugerido: \texttt{#1}
-            \end{minipage}
-        }
-    }
+    \includegraphics[width=0.92\textwidth,height=0.56\textheight,keepaspectratio]{#1}
     \caption{#2}
+    \label{#3}
 \end{figure}
 }
-
-\graphicspath{{capturas/}}
 
 \begin{document}
 
 \begin{titlepage}
     \centering
-    {\huge\bfseries\color{colorIPN}{Instituto Politecnico Nacional}\par}
-    {\Large\bfseries\color{colorESCOM}{Escuela Superior de Computo}\par}
+    {\huge\bfseries\color{colorIPN}{Instituto Politécnico Nacional}\par}
+    {\Large\bfseries\color{colorESCOM}{Escuela Superior de Cómputo}\par}
     \vspace{1cm}
     {\Large\color{colorIPN}{Desarrollo de Aplicaciones Web Client and Backend Development Frameworks}\par}
     \vspace{1.5cm}
-    {\huge\bfseries\color{colorESCOM}{Sistema de Gestion de Cuartos y Reservaciones}\par}
+    {\huge\bfseries\color{colorESCOM}{Integración de Swagger/OpenAPI}\par}
+    \vspace{0.4cm}
+    {\Large\bfseries\color{colorIPN}{Sistema de Gestión de Cuartos y Reservaciones}\par}
     \vspace{2cm}
-    {\Large\itshape\color{colorIPN}{Profesor: M. en C. Jose Asuncion Enriquez Zarate}\par}
+    {\Large\itshape\color{colorIPN}{Profesor: M. en C. José Asunción Enríquez Zárate}\par}
     \vspace{1.5cm}
-    {\Large\itshape\color{colorIPN}{Alumno: Estefany Karina Sánchez Calderón}\par}
+    {\Large\itshape\color{colorIPN}{Alumna: Estefany Karina Sánchez Calderón}\par}
     {\Large\itshape\color{colorIPN}{estefanysanchez1495@gmail.com}\par}
     {\Large\itshape\color{colorIPN}{Grupo: 7CM3}\par}
     \vfill
@@ -89,95 +83,144 @@
 \tableofcontents
 \pagebreak
 
-\section{Objetivo de la practica}
+\section{Objetivo de la práctica}
 
-Integrar el Front End con los servicios REST del Back End desarrollado en Spring Boot, completar el modulo de reservaciones, implementar autenticacion y autorizacion con Spring Security, y persistir usuarios, roles, cuartos y reservaciones en una base de datos relacional.
+El objetivo de la práctica fue integrar Swagger/OpenAPI en el Back End del Sistema de Gestión de Cuartos y Reservaciones, desarrollado con Spring Boot, para generar documentación automática de la API REST y facilitar la prueba de sus endpoints desde una interfaz interactiva.
 
-\section{Descripcion del sistema}
-
-El sistema permite administrar cuartos de hotel y registrar reservaciones asociadas a usuarios. La aplicacion expone una API REST protegida mediante HTTP Basic y un Front End estatico que consume los endpoints del Back End.
-
-Los roles considerados son:
+La integración se enfocó en documentar los módulos principales solicitados por la actividad:
 
 \begin{itemize}
-    \item \textbf{ADMIN}: administra cuartos, consulta todas las reservaciones y elimina registros.
-    \item \textbf{USER}: consulta cuartos disponibles y gestiona sus propias reservaciones.
+    \item Habitaciones o cuartos.
+    \item Reservaciones.
+    \item Autenticación y seguridad.
 \end{itemize}
 
-\section{Modelo de base de datos}
+\section{Descripción del sistema}
 
-El modelo principal se compone de las entidades \texttt{Usuario}, \texttt{Rol}, \texttt{Cuarto} y \texttt{Reservacion}. Los usuarios pueden tener roles mediante una relacion muchos a muchos. Cada reservacion pertenece a un usuario y a un cuarto.
+El sistema permite administrar cuartos de hotel y registrar reservaciones asociadas a usuarios autenticados. El Back End expone servicios REST bajo el prefijo \cod{/api/v1} y utiliza Spring Security con autenticación HTTP Basic para proteger las operaciones según el rol del usuario.
 
-\begin{longtable}{|>{\raggedright\arraybackslash}p{0.25\textwidth}|>{\raggedright\arraybackslash}p{0.55\textwidth}|}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.22\textwidth}|>{\raggedright\arraybackslash}p{0.58\textwidth}|}
 \hline
 \rowcolor{cyan!20}
-\textbf{Entidad} & \textbf{Descripcion}\\
+\textbf{Módulo} & \textbf{Responsabilidad}\\
 \hline
-\texttt{Usuario} & Almacena credenciales, correo, estado de habilitacion y roles asignados.\\
+\texttt{Cuarto} & Crear, consultar, actualizar, cambiar disponibilidad y eliminar habitaciones.\\
 \hline
-\texttt{Rol} & Define permisos generales como \texttt{ROLE\_ADMIN} y \texttt{ROLE\_USER}.\\
+\texttt{Reservacion} & Crear, consultar, actualizar, cancelar y eliminar reservaciones, validando fechas y traslapes.\\
 \hline
-\texttt{Cuarto} & Registra tipo, numero, precio, numero de camas y disponibilidad.\\
+\texttt{Auth} & Consultar la sesión del usuario autenticado mediante Spring Security.\\
 \hline
-\texttt{Reservacion} & Relaciona usuario, cuarto, fechas de entrada y salida, estado y fecha de creacion.\\
+\texttt{Archivo} & Cargar y descargar archivos asociados al sistema.\\
 \hline
 \end{longtable}
 
-\capturapendiente{01-modelo-base-datos.png}{Modelo de base de datos generado desde el gestor o diagrama entidad-relacion.}
+\section{Configuración de Swagger/OpenAPI}
 
-\section{Implementacion del Back End}
+La documentación automática se habilitó mediante la dependencia \cod{springdoc-openapi-starter-webmvc-ui}. Esta librería genera la especificación OpenAPI en formato JSON y publica Swagger UI para visualizar y probar los endpoints.
 
-El Back End fue desarrollado con Spring Boot y mantiene la organizacion por modulos del proyecto base. El modulo de cuartos se conserva en \texttt{features/room} y el modulo de reservaciones se implementa en \texttt{features/reservation}.
-
-\subsection{Modulo de cuartos}
-
-El modulo de cuartos permite crear, consultar, actualizar, cambiar disponibilidad y eliminar cuartos. Los endpoints se encuentran bajo la ruta:
-
-\begin{center}
-\texttt{/api/v1/cuartos}
-\end{center}
-
-\subsection{Modulo de reservaciones}
-
-El modulo de reservaciones permite crear, consultar, editar, cancelar y eliminar reservaciones. Al crear o editar una reservacion se validan las fechas y se evita reservar el mismo cuarto en periodos traslapados.
-
-\begin{lstlisting}[language=Java,caption={Regla de traslape usada en el repository.}]
-r.fechaEntrada < :fechaSalida AND r.fechaSalida > :fechaEntrada
+\begin{lstlisting}[language=XML,caption={Dependencia usada para integrar Springdoc OpenAPI.}]
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>2.8.13</version>
+</dependency>
 \end{lstlisting}
 
-\begin{longtable}{|>{\raggedright\arraybackslash}p{0.20\textwidth}|>{\raggedright\arraybackslash}p{0.45\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+En el archivo \cod{application.properties} se configuraron las rutas de documentación:
+
+\begin{lstlisting}[language=bash,caption={Rutas de Swagger UI y OpenAPI JSON.}]
+springdoc.swagger-ui.path=/swagger-ui.html
+springdoc.api-docs.path=/v3/api-docs
+springdoc.swagger-ui.operationsSorter=method
+springdoc.swagger-ui.tagsSorter=alpha
+\end{lstlisting}
+
+La clase \cod{ApiConfig} define los metadatos principales de la documentación:
+
+\begin{lstlisting}[language=Java,caption={Configuración general de OpenAPI.}]
+@Configuration
+public class ApiConfig {
+    @Bean
+    public OpenAPI myOpenAPI() {
+        return new OpenAPI()
+            .info(new Info()
+                .title("API para la gestion de reservaciones")
+                .version("1.0")
+                .description("API REST para la gestion de Cuartos y Reservaciones"));
+    }
+}
+\end{lstlisting}
+
+\captura{01-swagger-ui-general.png}{Interfaz Swagger UI del Sistema de Gestión de Cuartos y Reservaciones.}{fig:swagger-general}
+
+\section{Documentación de endpoints}
+
+Los controladores principales usan anotaciones de OpenAPI mediante \cod{@Tag}, lo que permite agrupar las operaciones por módulo dentro de Swagger UI.
+
+\subsection{Módulo de cuartos}
+
+El módulo \cod{Cuarto} se encuentra bajo la ruta \cod{/api/v1/cuartos}. Sus operaciones permiten administrar habitaciones y consultar disponibilidad.
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.18\textwidth}|>{\raggedright\arraybackslash}p{0.46\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
 \hline
 \rowcolor{cyan!20}
-\textbf{Metodo} & \textbf{Ruta} & \textbf{Descripcion}\\
+\textbf{Método} & \textbf{Ruta} & \textbf{Uso}\\
 \hline
-POST & \texttt{/api/v1/reservaciones} & Crear reservacion.\\
+POST & \texttt{/api/v1/cuartos} & Crear cuarto.\\
 \hline
-GET & \texttt{/api/v1/reservaciones} & Consultar todas las reservaciones.\\
+GET & \texttt{/api/v1/cuartos} & Listar cuartos.\\
 \hline
-GET & \texttt{/api/v1/reservaciones/\{id\}} & Consultar por identificador.\\
+GET & \texttt{/api/v1/cuartos/disponibles} & Listar cuartos disponibles.\\
 \hline
-GET & \texttt{/api/v1/reservaciones/usuario/\{idUsuario\}} & Consultar por usuario.\\
+GET & \texttt{/api/v1/cuartos/\{id\}} & Consultar cuarto por identificador.\\
 \hline
-GET & \texttt{/api/v1/reservaciones/cuarto/\{idCuarto\}} & Consultar por cuarto.\\
+PUT & \texttt{/api/v1/cuartos/\{id\}} & Actualizar datos de un cuarto.\\
 \hline
-PUT & \texttt{/api/v1/reservaciones/\{id\}} & Editar fechas de la reservacion.\\
+PATCH & \texttt{/api/v1/cuartos/\{id\}/disponibilidad} & Cambiar disponibilidad.\\
 \hline
-PATCH & \texttt{/api/v1/reservaciones/\{id\}/cancelar} & Cancelar reservacion.\\
-\hline
-DELETE & \texttt{/api/v1/reservaciones/\{id\}} & Eliminar reservacion.\\
+DELETE & \texttt{/api/v1/cuartos/\{id\}} & Eliminar cuarto.\\
 \hline
 \end{longtable}
 
-\capturapendiente{02-swagger-reservaciones.png}{Endpoints de reservaciones visibles en Swagger.}
+\captura{02-swagger-cuartos.png}{Endpoints del módulo de cuartos documentados en Swagger UI.}{fig:swagger-cuartos}
 
-\section{Implementacion de Spring Security}
+\subsection{Módulo de reservaciones}
 
-La seguridad se implemento con Spring Security usando HTTP Basic. Los usuarios y roles se almacenan en la base de datos y se cargan mediante un \texttt{UserDetailsService}. La clase \texttt{DataInitializer} crea dos usuarios iniciales para pruebas:
+El módulo \cod{Reservacion} se encuentra bajo la ruta \cod{/api/v1/reservaciones}. Incluye validaciones para evitar fechas inválidas y traslapes de reservaciones activas sobre el mismo cuarto.
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.18\textwidth}|>{\raggedright\arraybackslash}p{0.46\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\hline
+\rowcolor{cyan!20}
+\textbf{Método} & \textbf{Ruta} & \textbf{Uso}\\
+\hline
+POST & \texttt{/api/v1/reservaciones} & Crear reservación.\\
+\hline
+GET & \texttt{/api/v1/reservaciones} & Listar todas las reservaciones.\\
+\hline
+GET & \texttt{/api/v1/reservaciones/\{id\}} & Consultar reservación por identificador.\\
+\hline
+GET & \texttt{/api/v1/reservaciones/usuario/\{idUsuario\}} & Consultar reservaciones por usuario.\\
+\hline
+GET & \texttt{/api/v1/reservaciones/cuarto/\{idCuarto\}} & Consultar reservaciones por cuarto.\\
+\hline
+PUT & \texttt{/api/v1/reservaciones/\{id\}} & Actualizar fechas.\\
+\hline
+PATCH & \texttt{/api/v1/reservaciones/\{id\}/cancelar} & Cancelar reservación.\\
+\hline
+DELETE & \texttt{/api/v1/reservaciones/\{id\}} & Eliminar reservación.\\
+\hline
+\end{longtable}
+
+\captura{03-swagger-reservaciones.png}{Endpoints del módulo de reservaciones documentados en Swagger UI.}{fig:swagger-reservaciones}
+
+\section{Seguridad y acceso a la documentación}
+
+La API utiliza Spring Security con HTTP Basic. Los usuarios iniciales se crean desde \cod{DataInitializer}:
 
 \begin{longtable}{|c|c|c|}
 \hline
 \rowcolor{cyan!20}
-\textbf{Usuario} & \textbf{Password} & \textbf{Rol}\\
+\textbf{Usuario} & \textbf{Contraseña} & \textbf{Rol}\\
 \hline
 \texttt{admin} & \texttt{123456} & \texttt{ROLE\_ADMIN}\\
 \hline
@@ -185,52 +228,65 @@ La seguridad se implemento con Spring Security usando HTTP Basic. Los usuarios y
 \hline
 \end{longtable}
 
-\capturapendiente{03-login-basic-auth.png}{Prueba de autenticacion usando credenciales validas.}
-\capturapendiente{04-usuarios-roles-bd.png}{Usuarios y roles persistidos en la base de datos.}
+La configuración de seguridad permite consultar Swagger UI y OpenAPI JSON sin autenticación, mientras que los endpoints funcionales quedan protegidos por roles.
 
-\section{Integracion del Front End}
+\begin{lstlisting}[language=Java,caption={Reglas principales de seguridad.}]
+.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+.requestMatchers(HttpMethod.GET, "/api/v1/cuartos/**").hasAnyRole("ADMIN", "USER")
+.requestMatchers(HttpMethod.POST, "/api/v1/cuartos/**").hasRole("ADMIN")
+.requestMatchers(HttpMethod.GET, "/api/v1/reservaciones").hasRole("ADMIN")
+.requestMatchers(HttpMethod.POST, "/api/v1/reservaciones/**").hasAnyRole("ADMIN", "USER")
+.httpBasic(Customizer.withDefaults());
+\end{lstlisting}
 
-El Front End se implemento como una aplicacion estatica ubicada en la carpeta \texttt{frontend}. Permite iniciar sesion con credenciales Basic Auth, consultar cuartos, crear cuartos, crear reservaciones y cancelar reservaciones.
+\captura{06-security-config.png}{Configuración de seguridad para Swagger, cuartos y reservaciones.}{fig:security-config}
+
+\section{Validación de OpenAPI}
+
+La especificación OpenAPI se puede consultar desde:
 
 \begin{center}
-\texttt{http://localhost:5500}
+\url{http://localhost:8081/v3/api-docs}
 \end{center}
 
-\capturapendiente{05-frontend-cuartos.png}{Pantalla del Front End mostrando la lista de cuartos.}
-\capturapendiente{06-frontend-reservacion-creada.png}{Pantalla del Front End despues de crear una reservacion.}
+Este documento JSON contiene la versión de OpenAPI, los datos generales de la API, las rutas disponibles, los esquemas de entrada y salida, los parámetros y los códigos de respuesta.
+
+\captura{05-openapi-json.png}{Especificación OpenAPI JSON generada automáticamente.}{fig:openapi-json}
 
 \section{Pruebas de funcionamiento}
 
-\begin{longtable}{|>{\raggedright\arraybackslash}p{0.32\textwidth}|>{\raggedright\arraybackslash}p{0.30\textwidth}|>{\raggedright\arraybackslash}p{0.28\textwidth}|}
+Se compiló el proyecto con Maven Wrapper usando el comando:
+
+\begin{lstlisting}[language=bash,caption={Compilación del proyecto.}]
+./mvnw -DskipTests package
+\end{lstlisting}
+
+El resultado fue \cod{BUILD SUCCESS}, confirmando que la integración de Swagger/OpenAPI no rompe la compilación del Back End.
+
+\captura{00-build-success.png}{Compilación exitosa del proyecto.}{fig:build-success}
+
+También se realizó una prueba HTTP autenticada contra el módulo de cuartos. Se creó un cuarto usando credenciales de administrador y posteriormente se consultó la lista de cuartos.
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.30\textwidth}|>{\raggedright\arraybackslash}p{0.30\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
 \hline
 \rowcolor{cyan!20}
-\textbf{Prueba} & \textbf{Resultado esperado} & \textbf{Resultado obtenido}\\
+\textbf{Prueba} & \textbf{Endpoint} & \textbf{Resultado}\\
 \hline
-Compilacion con Maven Wrapper & El proyecto compila sin errores. & Correcto.\\
+Crear cuarto & \texttt{POST /api/v1/cuartos} & HTTP 201.\\
 \hline
-Inicio de sesion como ADMIN & Acceso a cuartos y reservaciones. & Correcto.\\
-\hline
-Creacion de cuarto & Se guarda un nuevo cuarto. & Correcto.\\
-\hline
-Creacion de reservacion & Se guarda una reservacion activa. & Correcto.\\
-\hline
-Traslape de fechas & El sistema rechaza la reservacion. & Correcto.\\
-\hline
-Cancelacion de reservacion & El estado cambia a \texttt{CANCELADA}. & Correcto.\\
+Listar cuartos & \texttt{GET /api/v1/cuartos} & HTTP 200.\\
 \hline
 \end{longtable}
 
-\capturapendiente{07-prueba-crear-cuarto.png}{Prueba de creacion de cuarto desde Front End, Swagger o Postman.}
-\capturapendiente{08-prueba-traslape.png}{Error mostrado al intentar crear una reservacion con fechas traslapadas.}
-\capturapendiente{09-prueba-cancelacion.png}{Reservacion cancelada correctamente.}
+\captura{07-prueba-http-cuartos.png}{Prueba autenticada del módulo de cuartos.}{fig:prueba-http}
 
 \section{Conclusiones}
 
-La practica permitio integrar el Back End y el Front End de un sistema de gestion de cuartos y reservaciones. Se completo el modulo de reservaciones con reglas de negocio para validar fechas y evitar traslapes, ademas de proteger los endpoints con Spring Security y roles persistidos en base de datos.
+La integración de Swagger/OpenAPI permitió documentar automáticamente el Back End del Sistema de Gestión de Cuartos y Reservaciones. La interfaz Swagger UI facilita la revisión de rutas, métodos HTTP, cuerpos de solicitud, respuestas y módulos disponibles sin revisar manualmente todos los controladores.
 
-El resultado es un proyecto funcional y ejecutable que cumple con los requerimientos minimos solicitados: API Spring Boot, base de datos relacional, autenticacion, autorizacion por roles, persistencia de usuarios, roles, cuartos y reservaciones, y una interfaz Front End conectada al Back End.
+El proyecto cumple con los puntos solicitados para la práctica: documentación de cuartos, reservaciones, autenticación y seguridad; acceso público a Swagger UI; generación de OpenAPI JSON; y evidencia de compilación y consumo de endpoints protegidos mediante HTTP Basic.
 
-\section{Referencias bibliograficas}
+\section{Referencias bibliográficas}
 \color{colorESCOM}{
 \begin{thebibliography}{9}
 \bibitem{spring-boot}
@@ -241,13 +297,13 @@ Spring, \textit{Spring Boot Reference Documentation}.
 Spring, \textit{Spring Security Reference}.
 \url{https://docs.spring.io/spring-security/reference/}
 
-\bibitem{spring-data}
-Spring, \textit{Spring Data JPA Reference Documentation}.
-\url{https://docs.spring.io/spring-data/jpa/reference/}
-
 \bibitem{springdoc}
 Springdoc, \textit{OpenAPI 3 Library for Spring Boot}.
 \url{https://springdoc.org/}
+
+\bibitem{openapi}
+OpenAPI Initiative, \textit{OpenAPI Specification}.
+\url{https://spec.openapis.org/oas/latest.html}
 \end{thebibliography}
 }
 
