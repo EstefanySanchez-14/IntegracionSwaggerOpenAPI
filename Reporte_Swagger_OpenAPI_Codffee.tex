@@ -40,6 +40,14 @@
         \caption{#1}
     \end{figure}
 }
+\newcommand{\capturaReal}[3]{
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.92\textwidth]{#2}
+        \caption{#1}
+        \label{#3}
+    \end{figure}
+}
 \setlength{\emergencystretch}{3em}
 
 \hypersetup{
@@ -332,7 +340,7 @@ El proyecto compila correctamente al omitir pruebas que dependen de la conexión
 
 El resultado obtenido fue \texttt{BUILD SUCCESS}, lo cual confirma que la integración de Swagger/OpenAPI no genera errores de compilación.
 
-\capturaPendiente{Compilación exitosa del proyecto}{Insertar captura de la terminal con el comando \texttt{mvn -DskipTests package} y el mensaje \texttt{BUILD SUCCESS}.}
+\capturaReal{Compilación exitosa del proyecto}{01_maven_build_success.png}{fig:build-success}
 
 La interfaz Swagger UI debe estar disponible en la siguiente ruta cuando el backend se encuentre ejecutándose:
 
@@ -340,7 +348,7 @@ La interfaz Swagger UI debe estar disponible en la siguiente ruta cuando el back
     \url{http://localhost:8080/swagger-ui/index.html}
 \end{center}
 
-\capturaPendiente{Interfaz Swagger UI cargada}{Insertar captura de Swagger UI mostrando los módulos Autenticación, Productos, Categorías, Pedidos, Usuarios, Perfil, Reportes, Correos y Prueba.}
+\capturaReal{Interfaz Swagger UI cargada}{02_swagger_ui_general.png}{fig:swagger-ui}
 
 La especificación OpenAPI en formato JSON se consulta en:
 
@@ -348,7 +356,7 @@ La especificación OpenAPI en formato JSON se consulta en:
     \url{http://localhost:8080/v3/api-docs}
 \end{center}
 
-\capturaPendiente{Especificación OpenAPI JSON}{Insertar captura del navegador mostrando el documento JSON generado en \texttt{/v3/api-docs}.}
+\capturaReal{Especificación OpenAPI JSON}{03_openapi_json.png}{fig:openapi-json}
 
 \subsection{Pruebas sugeridas desde Swagger UI}
 
@@ -375,13 +383,17 @@ Generar reporte PDF & \texttt{GET /api/reportes/pedidos/pdf} & Archivo PDF como 
 \hline
 \end{longtable}
 
-\capturaPendiente{Endpoint de autenticación documentado}{Insertar captura de \texttt{POST /api/auth/login} expandido, mostrando cuerpo de solicitud y respuestas posibles.}
+\capturaReal{Endpoint de autenticación documentado}{04_auth_login.png}{fig:auth-login}
 
-\capturaPendiente{Autorización con JWT en Swagger UI}{Insertar captura del botón \textit{Authorize} o de un endpoint protegido mostrando el candado de seguridad.}
+\capturaReal{Autorización con JWT en Swagger UI}{05_authorize_jwt.png}{fig:authorize-jwt}
 
-\capturaPendiente{Prueba de endpoint público}{Insertar captura de \textit{Try it out} en \texttt{GET /api/prueba} o \texttt{GET /api/productos/disponibles} con respuesta HTTP 200.}
+\capturaReal{Prueba de endpoint público: productos disponibles}{06_productos_disponibles_200.png}{fig:productos-200}
 
-\capturaPendiente{Documentación de pedidos y reportes}{Insertar captura de los endpoints de pedidos y reportes PDF dentro de Swagger UI.}
+\capturaReal{Prueba de endpoint público: categorías activas}{07_categorias_activas_200.png}{fig:categorias-200}
+
+\capturaReal{Documentación de pedidos en Swagger UI}{08_pedidos_documentados.png}{fig:pedidos-doc}
+
+\capturaReal{Documentación de reportes PDF en Swagger UI}{09_reportes_pdf.png}{fig:reportes-doc}
 
 \subsection{Observación sobre pruebas automáticas}
 
@@ -391,19 +403,18 @@ Al ejecutar \cod{mvn test}, el proyecto compila, pero la prueba de carga de cont
 docker compose up --build -d
 \end{lstlisting}
 
-\section{Lista de capturas pendientes}
+\section{Capturas incluidas como evidencia}
 
 \begin{enumerate}
-    \item Terminal con \cod{mvn -DskipTests package} y resultado \cod{BUILD SUCCESS}.
-    \item Docker Desktop iniciado o backend ejecutándose localmente.
-    \item Swagger UI en \url{http://localhost:8080/swagger-ui/index.html}.
-    \item Especificación OpenAPI JSON en \url{http://localhost:8080/v3/api-docs}.
-    \item Endpoint \cod{POST /api/auth/login} expandido.
-    \item Botón \textit{Authorize} con token Bearer JWT.
-    \item \cod{GET /api/productos/disponibles} probado desde Swagger UI.
-    \item \cod{GET /api/categorias/activas} probado desde Swagger UI.
-    \item Endpoints de pedidos documentados.
-    \item Endpoint de reportes PDF mostrando respuesta \cod{application/pdf}.
+    \item Compilación del backend con resultado \cod{BUILD SUCCESS}.
+    \item Swagger UI ejecutándose en \url{http://localhost:8080/swagger-ui/index.html}.
+    \item Especificación OpenAPI JSON disponible en \url{http://localhost:8080/v3/api-docs}.
+    \item Endpoint \cod{POST /api/auth/login} documentado con cuerpo de solicitud.
+    \item Esquema de autorización JWT disponible desde el botón \textit{Authorize}.
+    \item Endpoint \cod{GET /api/productos/disponibles} probado con respuesta HTTP 200.
+    \item Endpoint \cod{GET /api/categorias/activas} probado con respuesta HTTP 200.
+    \item Endpoints de pedidos documentados en Swagger UI.
+    \item Endpoint de reportes PDF documentado en Swagger UI.
 \end{enumerate}
 
 \section{Conclusiones}
@@ -412,7 +423,7 @@ La integración de Swagger/OpenAPI permitió generar documentación automática 
 
 La práctica también permitió reforzar la importancia de documentar parámetros, respuestas y reglas de seguridad. Al incluir el esquema \cod{bearerAuth}, Swagger UI puede representar correctamente los endpoints protegidos por JWT y permitir pruebas autenticadas desde el navegador.
 
-Finalmente, el proyecto quedó preparado para documentar los módulos principales solicitados: productos, categorías, pedidos, autenticación, seguridad y reportes. La compilación del backend fue exitosa, quedando pendiente únicamente levantar MySQL o Docker Desktop para tomar las capturas finales de funcionamiento.
+Finalmente, el proyecto quedó preparado para documentar los módulos principales solicitados: productos, categorías, pedidos, autenticación, seguridad y reportes. La compilación del backend fue exitosa y se incluyeron evidencias de funcionamiento con Docker, Swagger UI, OpenAPI JSON y pruebas de endpoints públicos con respuesta HTTP 200.
 
 \section{Referencias Bibliográficas}
 \color{colorESCOM}{
