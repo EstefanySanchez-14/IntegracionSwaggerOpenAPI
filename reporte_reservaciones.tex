@@ -1,0 +1,254 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{color}
+\usepackage[table,dvipsnames]{xcolor}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{longtable}
+\usepackage{titlesec}
+
+\definecolor{colorIPN}{rgb}{0.5,0.0,0.13}
+\definecolor{colorESCOM}{rgb}{0.0,0.5,1.0}
+\definecolor{placeholderBg}{rgb}{0.94,0.96,0.98}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=colorIPN,
+    urlcolor=colorESCOM
+}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{colorIPN}}
+  {\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{colorESCOM}}
+  {\thesubsection}{1em}{}
+
+\lstset{
+    basicstyle=\small\ttfamily,
+    numbers=left,
+    numberstyle=\tiny,
+    frame=tb,
+    tabsize=4,
+    columns=fixed,
+    showstringspaces=false,
+    breaklines=true,
+    commentstyle=\color{Violet},
+    keywordstyle=\color{colorIPN}\bfseries,
+    stringstyle=\color{colorESCOM}
+}
+
+\newcommand{\capturapendiente}[2]{
+\begin{figure}[H]
+    \centering
+    \IfFileExists{capturas/#1}{
+        \includegraphics[width=0.92\textwidth,height=0.58\textheight,keepaspectratio]{#1}
+    }{
+        \fcolorbox{colorIPN}{placeholderBg}{
+            \begin{minipage}[c][6cm][c]{0.88\textwidth}
+                \centering
+                \Large\textbf{Espacio para evidencia}\\[0.4cm]
+                \normalsize Archivo sugerido: \texttt{#1}
+            \end{minipage}
+        }
+    }
+    \caption{#2}
+\end{figure}
+}
+
+\graphicspath{{capturas/}}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    {\huge\bfseries\color{colorIPN}{Instituto Politecnico Nacional}\par}
+    {\Large\bfseries\color{colorESCOM}{Escuela Superior de Computo}\par}
+    \vspace{1cm}
+    {\Large\color{colorIPN}{Desarrollo de Aplicaciones Web Client and Backend Development Frameworks}\par}
+    \vspace{1.5cm}
+    {\huge\bfseries\color{colorESCOM}{Sistema de Gestion de Cuartos y Reservaciones}\par}
+    \vspace{2cm}
+    {\Large\itshape\color{colorIPN}{Profesor: M. en C. Jose Asuncion Enriquez Zarate}\par}
+    \vspace{1.5cm}
+    {\Large\itshape\color{colorIPN}{Alumno: Estefany Karina Sánchez Calderón}\par}
+    {\Large\itshape\color{colorIPN}{estefanysanchez1495@gmail.com}\par}
+    {\Large\itshape\color{colorIPN}{Grupo: 7CM3}\par}
+    \vfill
+    {\large\color{colorIPN}{\today}\par}
+\end{titlepage}
+
+\tableofcontents
+\pagebreak
+
+\section{Objetivo de la practica}
+
+Integrar el Front End con los servicios REST del Back End desarrollado en Spring Boot, completar el modulo de reservaciones, implementar autenticacion y autorizacion con Spring Security, y persistir usuarios, roles, cuartos y reservaciones en una base de datos relacional.
+
+\section{Descripcion del sistema}
+
+El sistema permite administrar cuartos de hotel y registrar reservaciones asociadas a usuarios. La aplicacion expone una API REST protegida mediante HTTP Basic y un Front End estatico que consume los endpoints del Back End.
+
+Los roles considerados son:
+
+\begin{itemize}
+    \item \textbf{ADMIN}: administra cuartos, consulta todas las reservaciones y elimina registros.
+    \item \textbf{USER}: consulta cuartos disponibles y gestiona sus propias reservaciones.
+\end{itemize}
+
+\section{Modelo de base de datos}
+
+El modelo principal se compone de las entidades \texttt{Usuario}, \texttt{Rol}, \texttt{Cuarto} y \texttt{Reservacion}. Los usuarios pueden tener roles mediante una relacion muchos a muchos. Cada reservacion pertenece a un usuario y a un cuarto.
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.25\textwidth}|>{\raggedright\arraybackslash}p{0.55\textwidth}|}
+\hline
+\rowcolor{cyan!20}
+\textbf{Entidad} & \textbf{Descripcion}\\
+\hline
+\texttt{Usuario} & Almacena credenciales, correo, estado de habilitacion y roles asignados.\\
+\hline
+\texttt{Rol} & Define permisos generales como \texttt{ROLE\_ADMIN} y \texttt{ROLE\_USER}.\\
+\hline
+\texttt{Cuarto} & Registra tipo, numero, precio, numero de camas y disponibilidad.\\
+\hline
+\texttt{Reservacion} & Relaciona usuario, cuarto, fechas de entrada y salida, estado y fecha de creacion.\\
+\hline
+\end{longtable}
+
+\capturapendiente{01-modelo-base-datos.png}{Modelo de base de datos generado desde el gestor o diagrama entidad-relacion.}
+
+\section{Implementacion del Back End}
+
+El Back End fue desarrollado con Spring Boot y mantiene la organizacion por modulos del proyecto base. El modulo de cuartos se conserva en \texttt{features/room} y el modulo de reservaciones se implementa en \texttt{features/reservation}.
+
+\subsection{Modulo de cuartos}
+
+El modulo de cuartos permite crear, consultar, actualizar, cambiar disponibilidad y eliminar cuartos. Los endpoints se encuentran bajo la ruta:
+
+\begin{center}
+\texttt{/api/v1/cuartos}
+\end{center}
+
+\subsection{Modulo de reservaciones}
+
+El modulo de reservaciones permite crear, consultar, editar, cancelar y eliminar reservaciones. Al crear o editar una reservacion se validan las fechas y se evita reservar el mismo cuarto en periodos traslapados.
+
+\begin{lstlisting}[language=Java,caption={Regla de traslape usada en el repository.}]
+r.fechaEntrada < :fechaSalida AND r.fechaSalida > :fechaEntrada
+\end{lstlisting}
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.20\textwidth}|>{\raggedright\arraybackslash}p{0.45\textwidth}|>{\raggedright\arraybackslash}p{0.25\textwidth}|}
+\hline
+\rowcolor{cyan!20}
+\textbf{Metodo} & \textbf{Ruta} & \textbf{Descripcion}\\
+\hline
+POST & \texttt{/api/v1/reservaciones} & Crear reservacion.\\
+\hline
+GET & \texttt{/api/v1/reservaciones} & Consultar todas las reservaciones.\\
+\hline
+GET & \texttt{/api/v1/reservaciones/\{id\}} & Consultar por identificador.\\
+\hline
+GET & \texttt{/api/v1/reservaciones/usuario/\{idUsuario\}} & Consultar por usuario.\\
+\hline
+GET & \texttt{/api/v1/reservaciones/cuarto/\{idCuarto\}} & Consultar por cuarto.\\
+\hline
+PUT & \texttt{/api/v1/reservaciones/\{id\}} & Editar fechas de la reservacion.\\
+\hline
+PATCH & \texttt{/api/v1/reservaciones/\{id\}/cancelar} & Cancelar reservacion.\\
+\hline
+DELETE & \texttt{/api/v1/reservaciones/\{id\}} & Eliminar reservacion.\\
+\hline
+\end{longtable}
+
+\capturapendiente{02-swagger-reservaciones.png}{Endpoints de reservaciones visibles en Swagger.}
+
+\section{Implementacion de Spring Security}
+
+La seguridad se implemento con Spring Security usando HTTP Basic. Los usuarios y roles se almacenan en la base de datos y se cargan mediante un \texttt{UserDetailsService}. La clase \texttt{DataInitializer} crea dos usuarios iniciales para pruebas:
+
+\begin{longtable}{|c|c|c|}
+\hline
+\rowcolor{cyan!20}
+\textbf{Usuario} & \textbf{Password} & \textbf{Rol}\\
+\hline
+\texttt{admin} & \texttt{123456} & \texttt{ROLE\_ADMIN}\\
+\hline
+\texttt{user} & \texttt{123456} & \texttt{ROLE\_USER}\\
+\hline
+\end{longtable}
+
+\capturapendiente{03-login-basic-auth.png}{Prueba de autenticacion usando credenciales validas.}
+\capturapendiente{04-usuarios-roles-bd.png}{Usuarios y roles persistidos en la base de datos.}
+
+\section{Integracion del Front End}
+
+El Front End se implemento como una aplicacion estatica ubicada en la carpeta \texttt{frontend}. Permite iniciar sesion con credenciales Basic Auth, consultar cuartos, crear cuartos, crear reservaciones y cancelar reservaciones.
+
+\begin{center}
+\texttt{http://localhost:5500}
+\end{center}
+
+\capturapendiente{05-frontend-cuartos.png}{Pantalla del Front End mostrando la lista de cuartos.}
+\capturapendiente{06-frontend-reservacion-creada.png}{Pantalla del Front End despues de crear una reservacion.}
+
+\section{Pruebas de funcionamiento}
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.32\textwidth}|>{\raggedright\arraybackslash}p{0.30\textwidth}|>{\raggedright\arraybackslash}p{0.28\textwidth}|}
+\hline
+\rowcolor{cyan!20}
+\textbf{Prueba} & \textbf{Resultado esperado} & \textbf{Resultado obtenido}\\
+\hline
+Compilacion con Maven Wrapper & El proyecto compila sin errores. & Correcto.\\
+\hline
+Inicio de sesion como ADMIN & Acceso a cuartos y reservaciones. & Correcto.\\
+\hline
+Creacion de cuarto & Se guarda un nuevo cuarto. & Correcto.\\
+\hline
+Creacion de reservacion & Se guarda una reservacion activa. & Correcto.\\
+\hline
+Traslape de fechas & El sistema rechaza la reservacion. & Correcto.\\
+\hline
+Cancelacion de reservacion & El estado cambia a \texttt{CANCELADA}. & Correcto.\\
+\hline
+\end{longtable}
+
+\capturapendiente{07-prueba-crear-cuarto.png}{Prueba de creacion de cuarto desde Front End, Swagger o Postman.}
+\capturapendiente{08-prueba-traslape.png}{Error mostrado al intentar crear una reservacion con fechas traslapadas.}
+\capturapendiente{09-prueba-cancelacion.png}{Reservacion cancelada correctamente.}
+
+\section{Conclusiones}
+
+La practica permitio integrar el Back End y el Front End de un sistema de gestion de cuartos y reservaciones. Se completo el modulo de reservaciones con reglas de negocio para validar fechas y evitar traslapes, ademas de proteger los endpoints con Spring Security y roles persistidos en base de datos.
+
+El resultado es un proyecto funcional y ejecutable que cumple con los requerimientos minimos solicitados: API Spring Boot, base de datos relacional, autenticacion, autorizacion por roles, persistencia de usuarios, roles, cuartos y reservaciones, y una interfaz Front End conectada al Back End.
+
+\section{Referencias bibliograficas}
+\color{colorESCOM}{
+\begin{thebibliography}{9}
+\bibitem{spring-boot}
+Spring, \textit{Spring Boot Reference Documentation}.
+\url{https://docs.spring.io/spring-boot/}
+
+\bibitem{spring-security}
+Spring, \textit{Spring Security Reference}.
+\url{https://docs.spring.io/spring-security/reference/}
+
+\bibitem{spring-data}
+Spring, \textit{Spring Data JPA Reference Documentation}.
+\url{https://docs.spring.io/spring-data/jpa/reference/}
+
+\bibitem{springdoc}
+Springdoc, \textit{OpenAPI 3 Library for Spring Boot}.
+\url{https://springdoc.org/}
+\end{thebibliography}
+}
+
+\end{document}

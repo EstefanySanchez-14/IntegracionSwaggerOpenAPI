@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sistema de Reservaciones</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <div>
+            <h1>Sistema de Reservaciones</h1>
+            <p>Gestion de cuartos, usuarios y reservaciones</p>
+        </div>
+        <div class="status">
+            <span id="sessionLabel">Sin sesion</span>
+            <button id="logoutBtn" class="ghost" type="button">Salir</button>
+        </div>
+    </header>
+
+    <main class="layout">
+        <section class="panel login-panel">
+            <h2>Acceso</h2>
+            <form id="loginForm" class="grid-form">
+                <label>
+                    API
+                    <input id="apiUrl" value="http://localhost:8080" required>
+                </label>
+                <label>
+                    Usuario
+                    <input id="username" value="admin" required>
+                </label>
+                <label>
+                    Password
+                    <input id="password" type="password" value="123456" required>
+                </label>
+                <button type="submit">Conectar</button>
+            </form>
+            <p id="message" class="message"></p>
+        </section>
+
+        <section class="toolbar">
+            <button id="loadRoomsBtn" type="button">Cargar cuartos</button>
+            <button id="loadReservationsBtn" type="button">Cargar reservaciones</button>
+            <a id="swaggerLink" class="link-button" href="http://localhost:8080/swagger-ui.html" target="_blank" rel="noreferrer">Swagger</a>
+        </section>
+
+        <section class="content-grid">
+            <article class="panel">
+                <div class="panel-head">
+                    <h2>Cuartos</h2>
+                    <span id="roomsCount">0</span>
+                </div>
+                <form id="roomForm" class="grid-form compact">
+                    <input id="roomType" placeholder="Tipo" required>
+                    <input id="roomNumber" type="number" min="1" placeholder="Numero" required>
+                    <input id="roomPrice" type="number" min="1" step="0.01" placeholder="Precio" required>
+                    <input id="roomBeds" type="number" min="1" placeholder="Camas" required>
+                    <button type="submit">Crear cuarto</button>
+                </form>
+                <div id="roomsList" class="list"></div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-head">
+                    <h2>Reservaciones</h2>
+                    <span id="reservationsCount">0</span>
+                </div>
+                <form id="reservationForm" class="grid-form compact">
+                    <input id="reservationUser" type="number" min="1" placeholder="Id usuario" value="1" required>
+                    <input id="reservationRoom" type="number" min="1" placeholder="Id cuarto" required>
+                    <input id="reservationStart" type="date" required>
+                    <input id="reservationEnd" type="date" required>
+                    <button type="submit">Crear reservacion</button>
+                </form>
+                <div id="reservationsList" class="list"></div>
+            </article>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
